@@ -4,7 +4,10 @@ This Blackjack Bot is working on the Steemit Blockchain.
 # Installing This Bot
 ```
 $ git clone https://github.com/andreistalker/blackjack-bot-steemit.git
-$ npm install
+$ cd blackjack-bot-steemit
+$ npm install mysql
+$ npm install request
+$ nmp install steem
 ```
 
 # Configuring This Bot
