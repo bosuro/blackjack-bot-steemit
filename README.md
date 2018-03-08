@@ -9,6 +9,7 @@ $ npm install mysql
 $ npm install request
 $ nmp install steem
 ```
+Import the database from jackpoststeem.sql
 
 # Configuring This Bot
 Update the database info on line 5.
