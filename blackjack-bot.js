@@ -5,14 +5,14 @@ var steem = require('steem');
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "",
+  masterpassword: "",
   database: "jackpotsteem"
 });
 
 var lastTransInt;
 
 const username = "";
-const masterpassword = "";
+const masterpass = "";
 const activekey = "";
 
 const gameStart = "play blackjack";
@@ -238,7 +238,7 @@ function cardHitNotification(gameID, houseTotal, playerTotal, cardNew) {
 	var memoDraw = "You draw: " + cardNew + ". Your total: " + playerTotal;
 	con.query("SELECT * FROM games WHERE id = " + gameID, function (err, result) {
 		if (err) throw err;
-		steem.broadcast.transfer(wif, username, result[0].player, "0.001 SBD", memoDraw, function(err, result) {
+		steem.broadcast.transfer(activekey, username, result[0].player, "0.001 SBD", memoDraw, function(err, result) {
 			console.log(err, result);
 		});
 	});
@@ -263,13 +263,13 @@ function hitGame(gameID, playerName) {
 				hitCard(gameID, cards);
 			}
 			else {
-				steem.broadcast.transfer(wif, username, playerName, "0.001 SBD", "Sorry, but this is not your game or game ended.", function(err, result) {
+				steem.broadcast.transfer(activekey, username, playerName, "0.001 SBD", "Sorry, but this is not your game or game ended.", function(err, result) {
 					console.log(err, result);
 				});
 			}
 		}
 		else {
-			steem.broadcast.transfer(wif, username, playerName, "0.001 SBD", "Sorry, but this game does not exist.", function(err, result) {
+			steem.broadcast.transfer(activekey, username, playerName, "0.001 SBD", "Sorry, but this game does not exist.", function(err, result) {
 				console.log(err, result);
 			});
 		}
@@ -295,13 +295,13 @@ function endGame(gameID, playerName) {
 				showHouse(gameID, result[0].houseTotal, result[0].playerTotal, cards);
 			}
 			else {
-				steem.broadcast.transfer(wif, username, playerName, "0.001 SBD", "Sorry, but this is not your game or game ended.", function(err, result) {
+				steem.broadcast.transfer(activekey, username, playerName, "0.001 SBD", "Sorry, but this is not your game or game ended.", function(err, result) {
 					console.log(err, result);
 				});
 			}
 		}
 		else {
-			steem.broadcast.transfer(wif, username, playerName, "0.001 SBD", "Sorry, but this game does not exist.", function(err, result) {
+			steem.broadcast.transfer(activekey, username, playerName, "0.001 SBD", "Sorry, but this game does not exist.", function(err, result) {
 				console.log(err, result);
 			});
 		}
@@ -562,7 +562,7 @@ function calculateOutcomeStand(gameID, houseNew, valid, cards) {
 			else
 				houseTotal += 4;
 		}
-		steem.broadcast.transfer(wif, username, result[0].player, "0.001 SBD", "House draw: " + houseNew + ". House total: " + houseTotal, function(err, result) {
+		steem.broadcast.transfer(activekey, username, result[0].player, "0.001 SBD", "House draw: " + houseNew + ". House total: " + houseTotal, function(err, result) {
 				console.log(err, result);
 				showHouse(gameID, houseTotal, playerTotal, cards);
 			});
@@ -619,7 +619,7 @@ function refundInvalidBet (playerName, bet, currency) {
 	var amount = parseFloat(bet).toFixed(3) + " " + currency;
 	var memoRefund = "You need to send over 0.01 SBD!";
 	
-	steem.broadcast.transfer(wif, username, playerName, amount, memoRefund, function(err, result) {
+	steem.broadcast.transfer(activekey, username, playerName, amount, memoRefund, function(err, result) {
 		console.log(err, result);
 	});
 	
@@ -669,7 +669,7 @@ function playGame(gameID, playerName) {
 	if(playerTotal < 21)
 	{
 		var memoPlay = "You draw: " + player1 + ", " + player2 + " (" + playerTotal + "). House draw: " + house1 + ". Send 0.001 SBD with memo hit " + gameID + " or stand " + gameID;
-		steem.broadcast.transfer(wif, username, playerName, "0.001 SBD", memoPlay, function(err, result) {
+		steem.broadcast.transfer(activekey, username, playerName, "0.001 SBD", memoPlay, function(err, result) {
 			console.log(err, result);
 		});
 	}
@@ -687,7 +687,7 @@ function winGame(gameID, to, house, playerTotal) {
 	con.query("SELECT * FROM games WHERE id = " + gameID, function (err, result) {
 		if (err) throw err;
 		var won = result[0].reward + " SBD";
-		steem.broadcast.transfer(wif, username, result[0].player, won, memoWin, function(err, result) {
+		steem.broadcast.transfer(activekey, username, result[0].player, won, memoWin, function(err, result) {
 			console.log(err, result);
 		});
 	});
@@ -706,7 +706,7 @@ function loseGame(gameID, loseby, house, you, cardd = 0) {
 	
 	con.query("SELECT * FROM games WHERE id = " + gameID, function (err, result) {
 		if (err) throw err;
-		steem.broadcast.transfer(wif, username, result[0].player, "0.001 SBD", memoLose, function(err, result) {
+		steem.broadcast.transfer(activekey, username, result[0].player, "0.001 SBD", memoLose, function(err, result) {
 			console.log(err, result);
 		});
 	});
@@ -722,7 +722,7 @@ function drawGame(gameID, house, player) {
 	con.query("SELECT * FROM games WHERE id = " + gameID, function (err, result) {
 		if (err) throw err;
 		var back = result[0].bet + " SBD";
-		steem.broadcast.transfer(wif, username, result[0].player, back, memoDraw, function(err, result) {
+		steem.broadcast.transfer(activekey, username, result[0].player, back, memoDraw, function(err, result) {
 			console.log(err, result);
 		});
 	});
