@@ -3,19 +3,17 @@ var request = require('request');
 var steem = require('steem');
 
 var con = mysql.createConnection({
-  host: "",
-  user: "",
+  host: "localhost",
+  user: "root",
   password: "",
-  database: ""
+  database: "jackpotsteem"
 });
 
 var lastTransInt;
 
 const username = "";
-const pass = "";
-const posting = "";
-const wif = "";
-const memo = "";
+const masterpassword = "";
+const activekey = "";
 
 const gameStart = "play blackjack";
 
@@ -39,7 +37,7 @@ function lastTrans() {
 }
 
 function updateLastTrans() {
-	request("https://uploadbeta.com/api/steemit/transfer-history/?id=meme-bot", function (error, response, body) {
+	request("https://uploadbeta.com/api/steemit/transfer-history/?id=" + username, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			var json = JSON.parse(body);
 			console.log("New transaction list aquired.");
@@ -59,11 +57,12 @@ function updateLastTrans() {
 			
 			for(var i = 0; i<= transNew - 1; i++)
 			{
+				console.log(json[i].memo);
 				if(!gameStart.localeCompare(json[i].memo)) {
 					var trans = json[i].transaction.split(" ");
-					var playerName = trans[5];
-					var bet = parseFloat(trans[2]);
-					var currency = trans[3];
+					var playerName = trans[4];
+					var bet = parseFloat(trans[1]);
+					var currency = trans[2];
 					
 					if(!currency.localeCompare("SBD"))
 					{
@@ -85,18 +84,18 @@ function updateLastTrans() {
 					else refundInvalidBet(playerName, bet, currency);
 				}
 				else {
-					var memoz = json[i].memo.split(" ");
-					if(!memoz[0].localeCompare("hit"))
+					var memo = json[i].memo.split(" ");
+					if(!memo[0].localeCompare("hit"))
 					{
 						var trans = json[i].transaction.split(" ");
-						var playerName = trans[5];
-						hitGame(parseInt(memoz[1]), playerName);
+						var playerName = trans[4];
+						hitGame(parseInt(memo[1]), playerName);
 					}
-					else if(!memoz[0].localeCompare("stand"))
+					else if(!memo[0].localeCompare("stand"))
 					{
 						var trans = json[i].transaction.split(" ");
-						var playerName = trans[5];
-						endGame(parseInt(memoz[1]), playerName);
+						var playerName = trans[4];
+						endGame(parseInt(memo[1]), playerName);
 					}
 				}
 			}
